@@ -4,23 +4,32 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: "缺少url参数" };
   }
   try {
-    const response = await fetch(targetUrl, {
+    const res = await fetch(targetUrl, {
+      method: "GET",
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Referer": new URL(targetUrl).origin,
+        "Accept-Language": "zh-CN,zh;q=0.9",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
       },
-      credentials: "omit"
+      redirect: "follow"
     });
-    const body = await response.text();
+
+    const contentType = res.headers.get("content-type") || "text/html";
+    const content = await res.arrayBuffer();
+
     return {
-      statusCode: response.status,
+      statusCode: res.status,
       headers: {
-        "Content-Type": response.headers.get("content-type") || "text/html",
+        "Content-Type": contentType,
         "Access-Control-Allow-Origin": "*"
       },
-      body: body
+      body: Buffer.from(content).toString("base64"),
+      isBase64Encoded: true
     };
   } catch (err) {
-    return { statusCode: 500, body: "代理出错：" + err.message };
+    return {
+      statusCode: 500,
+      body: "代理出错：" + err.message
+    };
   }
 };
