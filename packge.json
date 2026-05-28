@@ -1,0 +1,9 @@
+"name": "ui-proxy",
+"version": "1.0.0",
+"scripts": {
+"start": "node api/proxy.ts"
+},
+"dependencies": {
+"node-fetch": "^3.3.2"
+}
+}
